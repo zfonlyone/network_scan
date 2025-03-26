@@ -1,0 +1,30 @@
+# 架构图查看说明
+
+由于图片文件无法直接在文本编辑器中创建，架构图已使用Mermaid格式保存在`docs/architecture.md`文件中。
+
+## 查看方式
+
+1. **在支持Mermaid的Markdown查看器中查看**
+   - GitHub支持直接查看Mermaid图
+   - VS Code安装Markdown Preview Enhanced等扩展
+   - 使用Typora等Markdown编辑器
+
+2. **在线转换为图片**
+   - 访问 https://mermaid.live/
+   - 将Mermaid代码粘贴到编辑器中
+   - 导出为PNG或SVG图片
+
+3. **命令行转换**
+   如果安装了Node.js，可以使用以下命令将Mermaid转换为图片：
+   ```
+   npm install -g @mermaid-js/mermaid-cli
+   mmdc -i docs/architecture.md -o docs/architecture.png
+   ```
+
+## 架构图内容
+
+`architecture.md`文件包含三个主要的架构图：
+
+1. **系统架构图**：展示了系统主要组件及其关系
+2. **系统工作流程图**：描述了系统操作的时序过程
+3. **部署架构图**：展示了Docker容器部署结构

@@ -1,0 +1,31 @@
+# 常用代理服务器用户名字典
+# 每行一个用户名，井号(#)开头的行为注释
+
+# 常用默认用户名
+admin
+administrator
+root
+user
+guest
+proxy
+proxyadmin
+test
+tester
+demo
+
+# 特定代理软件默认用户名
+squid
+nginx
+apache
+httpd
+haproxy
+3proxy
+CCProxy
+dante
+privoxy
+shadowsocks
+v2ray
+tor
+polipo
+
+# 空用户名（一些代理不需要用户名） 

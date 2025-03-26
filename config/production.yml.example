@@ -1,0 +1,173 @@
+# 代理IP扫描器系统 - 生产环境配置示例
+# 使用前请复制此文件为 production.yml 并修改相关配置
+
+# 系统全局配置
+system:
+  debug: false
+  log_level: INFO
+  log_file: logs/proxy_scanner.log
+  timezone: Asia/Shanghai
+  language: zh_CN
+
+# API服务配置
+api:
+  host: 0.0.0.0
+  port: 8000
+  workers: 4
+  timeout: 30
+  api_key: "your_secret_api_key"  # 请修改为强密码
+  api_keys:
+    - "api_key_1"  # 请替换为实际密钥
+    - "api_key_2"  # 请替换为实际密钥
+  hmac_secret: "your_hmac_secret"  # 用于HMAC验证，请修改为强随机字符串
+  
+  # IP白名单配置
+  ip_whitelist_enabled: false
+  ip_whitelist:
+    - "127.0.0.1"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+  
+  # JWT认证配置
+  jwt_auth_enabled: false
+  jwt_secret: "your_jwt_secret"  # 请修改为强随机字符串
+  jwt_expire_seconds: 3600  # 1小时
+  
+  # 管理员账户
+  admin_username: "admin"
+  admin_password: "secure_password"  # 请修改为强密码
+  
+  # 速率限制配置
+  rate_limit_enabled: true
+  rate_limit: 100  # 每分钟最大请求数
+  rate_limit_period: 60  # 时间窗口(秒)
+
+# 扫描器配置
+scanner:
+  # 扫描线程数
+  threads: 200
+  # 连接超时(秒)
+  timeout: 5
+  # 扫描间隔(秒)
+  scan_interval: 300
+  # 验证线程数
+  verify_threads: 50
+  # 验证超时(秒)
+  verify_timeout: 10
+  # 验证间隔(秒)
+  verify_interval: 600
+  # 代理IP来源
+  sources:
+    - name: "free_proxy_list"
+      enabled: true
+      url: "https://free-proxy-list.net/"
+      interval: 3600
+    - name: "geonode"
+      enabled: true
+      url: "https://proxylist.geonode.com/api/proxy-list"
+      interval: 3600
+    - name: "proxy_nova"
+      enabled: true
+      url: "https://www.proxynova.com/proxy-server-list/"
+      interval: 3600
+  # 弱密码测试配置
+  password_test:
+    enabled: true
+    max_tries: 5
+    username_file: "dict/usernames.txt"
+    password_file: "dict/passwords.txt"
+
+# 数据库配置
+database:
+  type: mysql
+  host: db
+  port: 3306
+  username: your_db_username
+  password: your_db_password
+  database: proxy_scanner
+  pool_size: 10
+  charset: utf8mb4
+  # 备份配置
+  backup:
+    enabled: true
+    interval: 86400  # 每天一次
+    keep_days: 7     # 保留7天的备份
+    path: "backup/"
+
+# Redis配置
+redis:
+  host: redis
+  port: 6379
+  db: 0
+  password: your_redis_password  # 如不需要密码可设为null
+  max_connections: 10
+
+# 缓存配置
+cache:
+  type: redis
+  ttl: 3600
+  prefix: "proxy_scanner:"
+
+# IP管理配置
+ip_manager:
+  # IP评分配置
+  scoring:
+    initial_score: 50
+    min_score: 0
+    max_score: 100
+    increment_on_success: 2
+    decrement_on_failure: 1
+  # IP过期配置
+  expiration:
+    enabled: true
+    inactive_days: 7  # 7天不活跃则标记为过期
+  # 地理位置检测配置
+  geo:
+    enabled: true
+    db_path: "data/GeoLite2-City.mmdb"
+    update_interval: 2592000  # 30天更新一次
+
+# 导出配置
+export:
+  formats:
+    - json
+    - csv
+    - txt
+  default_limit: 1000
+  max_limit: 10000
+
+# 告警配置
+alerts:
+  low_proxy_count:
+    enabled: true
+    threshold: 100
+    channels:
+      - email
+      - webhook
+  high_failure_rate:
+    enabled: true
+    threshold: 0.5  # 50%失败率
+    interval: 3600  # 1小时检查一次
+    channels:
+      - email
+
+# 通知渠道配置
+notification:
+  email:
+    enabled: false
+    smtp_server: "smtp.example.com"
+    smtp_port: 587
+    smtp_user: "your_email@example.com"
+    smtp_password: "your_email_password"
+    from_addr: "your_email@example.com"
+    to_addrs:
+      - "admin@example.com"
+  webhook:
+    enabled: false
+    url: "https://your-webhook-endpoint.com/hook"
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+    retry_count: 3
+    retry_interval: 5 

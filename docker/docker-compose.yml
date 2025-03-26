@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # 数据库服务
+  postgres:
+    image: postgres:14-alpine
+    container_name: proxy_scanner_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: proxy_scanner
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - proxy_scanner_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis服务
+  redis:
+    image: redis:6-alpine
+    container_name: proxy_scanner_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - proxy_scanner_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API服务
+  api:
+    build:
+      context: ..
+      dockerfile: docker/api/Dockerfile
+    container_name: proxy_scanner_api
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_KEY=${API_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - ../logs:/app/logs
+      - backup_data:/data/backups
+      - dict_data:/app/dict
+    networks:
+      - proxy_scanner_network
+    depends_on:
+      - postgres
+      - redis
+    command: ["python", "main.py", "--mode", "api"]
+
+  # 扫描器服务
+  scanner:
+    build:
+      context: ..
+      dockerfile: docker/scanner/Dockerfile
+    container_name: proxy_scanner_scanner
+    restart: always
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_KEY=${API_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - ../logs:/app/logs
+      - backup_data:/data/backups
+      - dict_data:/app/dict
+      - ../dict:/app/dict_src:ro
+    networks:
+      - proxy_scanner_network
+    depends_on:
+      - postgres
+      - redis
+    command: ["python", "main.py", "--mode", "scanner"]
+
+volumes:
+  postgres_data:
+    name: proxy_scanner_postgres_data
+  redis_data:
+    name: proxy_scanner_redis_data
+  backup_data:
+    name: proxy_scanner_backup_data
+  dict_data:
+    name: proxy_scanner_dict_data
+
+networks:
+  proxy_scanner_network:
+    name: proxy_scanner_network 

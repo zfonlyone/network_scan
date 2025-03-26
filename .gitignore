@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+ENV/
+virtualenv/
+.env
+
+# 日志
+logs/
+*.log
+
+# 数据库
+*.db
+*.sqlite3
+*.sqlite
+
+# 缓存
+cache/
+.cache/
+*.cache
+
+# 敏感配置文件
+config/development.yml
+config/production.yml
+config/*.env
+.env
+*.pem
+*.key
+*.crt
+*.cert
+
+# 备份文件
+backup/
+*.bak
+*.sql
+*.sql.gz
+*.dump
+
+# 数据目录
+data/
+dict/*.txt
+!dict/usernames.txt.example
+!dict/passwords.txt.example
+
+# Docker
+.dockerignore
+.docker/
+docker-volumes/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.Thumbs.db
+
+# 测试
+.coverage
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# 其他
+.git/
+*.tmp
+*~
+*.pid
+plan.md
