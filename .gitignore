@@ -35,10 +35,7 @@ logs/
 *.sqlite3
 *.sqlite
 
-# 缓存
-cache/
-.cache/
-*.cache
+
 
 # 敏感配置文件
 config/development.yml
